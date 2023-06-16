@@ -1,4 +1,4 @@
-## Syslog-ng and Meraki URLs and Events Configuration
+# Syslog-ng and Meraki URLs and Events Configuration
 
 Installation and configuration of syslog-ng server with meraki urls and events logs on Linux Mint. 
 
@@ -7,48 +7,56 @@ For this example we use:
 192.168.0.10 = as the server IP adddress, and the 514 port.
 192.168.0.20 = as the Meraki Appliance IP address.
 
-<p># Steps
-#1. Installing syslog-ng
-#2. Create a 'meraki' directory to keep all meraki logs in it
-#3. Modify the syslog-ng.conf file
-#4. Create the two meraki log files in /var/log/meraki/
-#5. Create a bash script to rotate the events, and urls log files, if bigger than 1MB
-#6. Save the rotating script in: /etc/crontab.d/
-#7 Create the crontab job
-#8. Useful commands</p>p>
+### Steps
+1. Installing syslog-ng
+2. Create a 'meraki' directory to keep all meraki logs in it
+3. Modify the syslog-ng.conf file
+4. Create the two meraki log files in /var/log/meraki/
+5. Create a bash script to rotate the events, and urls log files, if bigger than 1MB
+6. Save the rotating script in: /etc/crontab.d/
+7 Create the crontab job
+8. Useful commands
 
-# 1. Installing syslog-ng:
-sudo apt update && sudo apt install syslog-ng -y
+### 1. Installing syslog-ng:
+`sudo apt update && sudo apt install syslog-ng -y`
 
-# 2. Create a 'meraki' directory to keep all meraki logs in it:
-sudo mkdir -p /var/log/meraki
+### 2. Create a 'meraki' directory to keep all meraki logs in it:
+`sudo mkdir -p /var/log/meraki`
 
-# 3. Modify the syslog-ng.conf file.
-sudo nano /etc/syslog-ng/syslog-ng.conf
+### 3. Open and Modify the syslog-ng.conf file.
+`sudo nano /etc/syslog-ng/syslog-ng.conf`
 
+#Make de following changes:
+
+```
 #--------------  syslog-ng.conf starts here -----------------------------------------------------
 #If you wish to get logs from remote machine you should uncomment
 #this and comment the above source line. 
-source s_net { udp(ip(192.168.0.10) port(514)); };
+`source s_net { udp(ip(192.168.0.10) port(514)); };`
 
 #create individual filters to match each of the role categories
-filter f_meraki_urls { host( "192.168.0.20" ) and match("urls" value ("MESSAGE")); };
-filter f_meraki_events { host( "192.168.0.20" ) and match("events" value ("MESSAGE")); };
+`filter f_meraki_urls { host( "192.168.0.20" ) and match("urls" value ("MESSAGE")); };`
+`filter f_meraki_events { host( "192.168.0.20" ) and match("events" value ("MESSAGE")); };`
 
 #define individual destinations for each of the role categories
-destination df_meraki_urls { file("/var/log/meraki/meraki_urls.log"); };
-destination df_meraki_events { file("/var/log/meraki/meraki_events.log"); };
+`destination df_meraki_urls { file("/var/log/meraki/meraki_urls.log"); };`
+`destination df_meraki_events { file("/var/log/meraki/meraki_events.log"); };`
 
 #bundle the source, filter, and destination rules together with a logging rule for each role category
-log { source ( s_net ); filter( f_meraki_urls ); destination ( df_meraki_urls ); };
-log { source ( s_net ); filter( f_meraki_events ); destination ( df_meraki_events ); };
-#--------------  syslog-ng.conf ends here -----------------------------------------------------
+`log { source ( s_net ); filter( f_meraki_urls ); destination ( df_meraki_urls ); };`
+`log { source ( s_net ); filter( f_meraki_events ); destination ( df_meraki_events ); };`
 
-# 4. Create the two meraki log files in /var/log/meraki/:
+#--------------  syslog-ng.conf ends here -----------------------------------------------------
+```
+
+### 4. Create the two meraki log files in /var/log/meraki/:
+```
 touch /var/log/meraki/meraki_urls.log
 touch /var/log/meraki/meraki_events.log
+```
 
-# 5. Create a bash script to rotate the events, and urls log files, if bigger than 1MB
+### 5. Create a bash script to rotate the events, and urls log files, if bigger than 1MB
+```
 #-------- rotating log files start here ----------------
 #!/bin/bash
 #file: rotating-meraki-events-and-urls-log-files.sh
@@ -119,37 +127,56 @@ else
 fi
 exit
 #-------- rotating log files start here ----------------
+```
 
-# 6. Save the rotating script in: /etc/crontab.d/
-#Then when done save it at this path: /etc/crontab.d/
-#Then apply permissions: 
+### 6. Saving and applying permissions to the rotating-meraki-events-and-urls-log-files.sh file
+```
+#Then when done making the changes save it at this path: 
+/etc/crontab.d/
+
+#Then apply the permissions: 
 sudo chmod +x /etc/crontab.d/rotating-meraki-events-and-urls-log-files.sh
 
-# 7 Create a crontab job:
+```
+
+### 7 Create a crontab job:
+```
 #Run the command below to edit crontab:
 crontab -e
+
 #Enter the following to run the script every hour: 
 0 * * * * /etc/crontab.d/rotating-meraki-events-and-urls-log-files.sh
+
 #After crontab is saved, if you want to check the crontab listing:
 sudo crontab -l
 
-# 8. Useful commands:
+```
+
+### 8. Useful commands:
+```
 #Restart syslog-ng (or restart the server):
 sudo systemctl restart syslog-ng
+
 #Syslog-ng status:
 sudo systemctl status syslog-ng
+
 #If you want to check if the meraki urls and event files are receiving log entries:
 cat /var/log/meraki/meraki_urls.log
 cat /var/log/meraki/meraki_events.log
+
 #To see live entries:
 tail -F /var/log/meraki/meraki_urls.log
+
 #To see the last 50 entries en meraki_urls.org (or any file):
 tail -n 50 /var/log/meraki/meraki_urls.log
+
 #To see the whole content of the meraki-urls.org file (or any file):
 cat /var/log/meraki/meraki_urls.log
-#To search in a log file for a particular IP: 
-cat /var/log/meraki/meraki_urls.log | grep <IP>
 
+#To search in a log file for a particular IP, example 192.168.0.123: 
+cat /var/log/meraki/meraki_urls.log | grep 192.168.0.123
+
+```
 Hope this is useful to someone out there.
 
 Thank you!
