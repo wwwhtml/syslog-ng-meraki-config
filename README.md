@@ -5,7 +5,6 @@ Note: I am pro privacy, but I am making this tutorial public so school districts
 Installation and configuration of syslog-ng server with meraki urls and events logs on Linux Mint. 
 
 For this example we use: 
-"admin" = as the sudo user.
 192.168.0.10 = as the server IP adddress, and the 514 port.
 192.168.0.20 = as the Meraki Appliance IP address. Not shown here, but you will need to point your Meraki appliance to send the logs to your server.
 
