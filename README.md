@@ -7,7 +7,7 @@ For this example we use:
 192.168.0.10 = as the server IP adddress, and the 514 port.
 192.168.0.20 = as the Meraki Appliance IP address.
 
-# Steps
+<p># Steps
 #1. Installing syslog-ng
 #2. Create a 'meraki' directory to keep all meraki logs in it
 #3. Modify the syslog-ng.conf file
@@ -15,7 +15,7 @@ For this example we use:
 #5. Create a bash script to rotate the events, and urls log files, if bigger than 1MB
 #6. Save the rotating script in: /etc/crontab.d/
 #7 Create the crontab job
-#8. Useful commands
+#8. Useful commands</p>p>
 
 # 1. Installing syslog-ng:
 sudo apt update && sudo apt install syslog-ng -y
