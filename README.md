@@ -1,7 +1,5 @@
 # Syslog-ng Server Install and Configuration with Meraki URLs and Events Logs
 
-Note: I am pro privacy, but I am making this tutorial public so school districts can do a good use of it, to protect the students.
-
 Installation and configuration of syslog-ng server with meraki urls and events logs on Linux Mint. 
 
 For this example we use: 
@@ -178,9 +176,7 @@ cat /var/log/meraki/meraki_urls.log
 cat /var/log/meraki/meraki_urls.log | grep 192.168.0.123
 
 ```
+
 Hope this is useful to someone out there.
 
-Thank you!
-
-2023-06-16 - Source: https://www.github.com/wwwhtml/syslog-ng-meraki-config
-
+Daniel A. - 2023-06-16 - Source: https://www.github.com/wwwhtml/syslog-ng-meraki-config
